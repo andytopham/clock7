@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "clock installer"
+echo "clock7 installer"
 echo
 echo "apt-get update"
 apt-get update
@@ -16,3 +16,6 @@ apt-get -y install php5-cgi
 apt-get -y install php5
 lighty-enable-mod fastcgi-php
 service lighttpd force-reload
+echo "Now set correct webpage by..."
+echo "Edit /etc/lighttpd/lighttpd.conf and change root page to ~"
+echo "Then restart webserver by: sudo service lighttpd force-reload"

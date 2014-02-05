@@ -1,5 +1,5 @@
 #!/usr/bin/python
-""" clock6.py
+""" clock7.py
 	andyt clock using the piliter hardware.
 """
 import time
@@ -31,7 +31,8 @@ def clockstart():
 		if(myAlarmTime.check()):
 #			myLeds.selftest(60,1200)	# this is the alarm
 #			myGpio.sequenceleds(1,3)	# just a test set
-			myGpio.sequenceleds(30,1200)	# this is the alarm
+#			Parameters below are: delay, holdtime
+			myGpio.sequenceleds(30,2000)	# this is the alarm
 	  
 if __name__ == "__main__":
 	'''	clock6 main routine
