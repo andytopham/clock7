@@ -18,7 +18,7 @@ class AlarmTime():
 		
 	def read(self):
 		logging.info("Reading alarm time")
-		f=open('/home/pi/alarmtime','r')
+		f=open('/home/pi/alarmtime.txt','r')
 		fn=f.readline()
 		f.close()
 		a,b = fn.split(":")

@@ -7,8 +7,10 @@ echo
 echo "apt-get -y upgrade"
 apt-get -y upgrade
 echo "installing rpi-gpio"
-apt-get install python-dev
-apt-get install python-rpi.gpio
+apt-get -y install python-dev
+apt-get -y install python-rpi.gpio
+echo "setup dirs"
+mkdir log
 echo "installing web stuff"
 apt-get -y install lighttpd
 apt-get -y install php5-common
