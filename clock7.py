@@ -17,20 +17,18 @@ def clockstart():
 	##The start of the real code ##
 	"""Main:clock7"""
 	"""Print info about the environment and initialise all hardware."""
-	print "main:- Clock7 - piLiter clock code."
+	print "main:- Clock7.1 - piLiter clock code."
 	logging.info("Setting time")
 	os.environ['TZ'] = 'Europe/London'
 	time.tzset
 	myGpio=gpio.gpio()
 	myGpio.sequenceleds()
 	myAlarmTime=alarmtime.AlarmTime()
-	alarmhour,alarmminute = myAlarmTime.read()
+	myAlarmTime.read()
 
 	while True:
 		time.sleep(30)
 		if(myAlarmTime.check()):
-#			myLeds.selftest(60,1200)	# this is the alarm
-#			myGpio.sequenceleds(1,3)	# just a test set
 #			Parameters below are: delay, holdtime
 			myGpio.sequenceleds(30,2000)	# this is the alarm
 	  
@@ -42,7 +40,7 @@ if __name__ == "__main__":
 	logging.basicConfig(
 						filename='/home/pi/log/clock.log',
 						filemode='w',
-						level=logging.WARNING)	#filemode means that we do not append anymore
+						level=logging.INFO)	#filemode means that we do not append anymore
 #	Default level is warning, level=logging.INFO log lots, level=logging.DEBUG log everything
 	logging.warning(datetime.datetime.now().strftime('%d %b %H:%M')+". Running clock7 class as a standalone app")
 	clockstart()

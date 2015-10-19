@@ -13,21 +13,31 @@ class AlarmTime():
 	def __init__(self):
 		logging.info("Initialising alarm time")
 		a=0 # just to fix the formatting
-		self.alarmhour=8
-		self.alarmminute=36
+		self.alarmhour=6
+		self.alarmminute=20
+		self.wealarmhour=7
+		self.wealarmminute=00
 		
 	def read(self):
 		logging.info("Reading alarm time")
-		f=open('/home/pi/alarmtime.txt','r')
-		fn=f.readline()
-		f.close()
-		a,b = fn.split(":")
-		self.alarmhour=int(a)
-		self.alarmminute = int(b)
-		logging.info("Read alarm time: "+fn)
-		print "Read alarm time: %02d:%02d" % (self.alarmhour,self.alarmminute)
-		print "No alarm on Sat or Sun"
-		return [self.alarmhour, self.alarmminute]
+		try:
+			file=open('/home/pi/alarmtime.txt','r')
+			line1=file.readline()
+			line2=file.readline()
+			file.close()
+			a,b = line1.split(":")
+			self.alarmhour=int(a)
+			self.alarmminute = int(b)
+			a,b = line2.split(":")
+			self.wealarmhour=int(a)
+			self.wealarmminute = int(b)
+		except:
+			logging.warning("Failed to open alarmtime file, using defaults.")
+		logging.info("Weekday alarm time: %02d:%02d" % (self.alarmhour,self.alarmminute))
+		logging.info("Weekend alarm time: %02d:%02d" % (self.wealarmhour,self.wealarmminute))
+		print "Weekday alarm time: %02d:%02d" % (self.alarmhour,self.alarmminute)
+		print "Weekend alarm time: %02d:%02d" % (self.wealarmhour,self.wealarmminute)
+		return(0)
 		
 	def check(self):
 		logging.info("Checking alarm")
@@ -37,13 +47,21 @@ class AlarmTime():
 		hour=timenow[3]
 		minute=timenow[4] 
 		day=timenow[6]
-		if ((hour == self.alarmhour) and (minute == self.alarmminute) and (day < 5)):
-			logging.warning("Alarm going off")
-			print ": Alarm going off"
-			return(True)
-		else:
-	#		print ": Alarm not going off"
-			return(False)
+		if day < 5:				# weekday timings
+			if ((hour == self.alarmhour) and (minute == self.alarmminute)):
+				logging.warning("Alarm going off")
+				print "Alarm going off"
+				return(True)
+			else:
+				return(False)
+		else:					# weekend timings
+			if ((hour == self.wealarmhour) and (minute == self.wealarmminute)):
+				logging.warning("Alarm going off")
+				print "Alarm going off"
+				return(True)
+			else:
+				return(False)
+		
 
 if __name__ == "__main__":
 	'''	alarmtime main routine

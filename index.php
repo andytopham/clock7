@@ -43,14 +43,14 @@
 				echo "New alarm time : ";
 				echo $fname;
 				echo "<br>";
-				$f=fopen("/home/pi/alarmtime","w") or die("Could not open alarmtime file for writing"); 
+				$f=fopen("/home/pi/alarmtime.txt","w") or die("Could not open alarmtime.txt file for writing"); 
 				fwrite($f, $fname);
 				fclose($f); 
 				$f=fopen("/home/pi/selftest","w") or die("Could not open selftest file for writing"); 
 				fwrite($f, "1");
 				fclose($f); 
 			} 
-			$lines = file('/home/pi/alarmtime');
+			$lines = file('/home/pi/alarmtime.txt');
 			echo "Alarm time:   ". $lines[0] ."<br>";
 			$lines = file('/home/pi/ledstate');
 			echo "LED state:   ". $lines[0] ."<br>";
