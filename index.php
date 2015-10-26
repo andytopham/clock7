@@ -27,7 +27,7 @@
 <body>
 	<div id="page">
 		<div id="header">
-			<h1> Clock 7.0 </h1>
+			<h1> Clock 7.2 </h1>
 		</div>
 
 		<div id="body">
@@ -37,7 +37,9 @@
 				<input type="submit" value="Submit" style="font-size:xx-large">
 		  </form>
 		  <?php
-			echo "Server time : " . date("H:i", time()) . "<br>";
+			$secondsWait = 20;
+			header("Refresh:$secondsWait");
+			echo "Server time : " . date("D H:i", time()) . "<br>";
 			if ($_POST){
 				$fname=$_POST['newalarmtime'];
 				echo "New alarm time : ";
@@ -51,8 +53,9 @@
 				fclose($f); 
 			} 
 			$lines = file('/home/pi/alarmtime.txt');
-			echo "Alarm time:   ". $lines[0] ."<br>";
-			$lines = file('/home/pi/ledstate');
+			echo "Weekday alarm time:   ". $lines[0] ."<br>";
+			echo "Weekend alarm time:   ". $lines[1] ."<br>";
+			$lines = file('/home/pi/ledstate.txt');
 			echo "LED state:   ". $lines[0] ."<br>";
 		  ?>
 			<center>

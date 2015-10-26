@@ -42,8 +42,6 @@ class AlarmTime():
 	def check(self):
 		logging.info("Checking alarm")
 		timenow=list(time.localtime())
-#		print time.strftime("%c",time.localtime()),". Alarmtime: "+str(self.alarmhour)+":"+str(self.alarmminute)
-#		timenow=list(time.localtime())
 		hour=timenow[3]
 		minute=timenow[4] 
 		day=timenow[6]

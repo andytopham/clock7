@@ -51,27 +51,43 @@ class gpio:
 		self.stop = 0
 		self.vol = 0
 		
-	def sequenceleds(self, delay=.1, holdtime=.1):
+	def writeledstate(self, lednumber, ledstate):
+		led = []
+		file = open('/home/pi/ledstate.txt','r+')		# read and write
+		line = file.readline()
+		led = line.split()
+#		for i in range(8):
+#			print "led ",led[i]
+#		print "writing: ",str(lednumber),str(ledstate)
+		led[lednumber] = ledstate
+		file.seek(0)			# rewind file
+		for i in range(8):
+			file.write(str(led[i])+" ")
+		file.close()
+		return(0)
+			
+	def sequenceleds(self, delay=.5, holdtime=.5):
 		'''Alternative test routine to be used with the clock3 slice of pi.'''
 		self.logger.debug("def gpio sequenceleds")
 		# This array is the Slice of Pi pins: GP0-7
 #		a = [17,18,21,22,23,24,25,4]
 #		a = [4,17,21,18,22,23,24,25]
 		a = [4,17,27,18,22,23,24,25]	# rev 2 pinout
+		# Set all pins as outputs
 		for i in range(len(a)):
 			GPIO.setup(a[i], GPIO.OUT)
 			GPIO.output(a[i], GPIO.LOW)
-	#	delay = .1
-	#	while True:
 		for i in range(len(a)):
 			time.sleep(delay)
 			print "High:",a[i]
 			GPIO.output(a[i], GPIO.HIGH)
+			self.writeledstate(i,1)
 		time.sleep(holdtime)
 		for i in range(len(a)):
 			time.sleep(delay)
 			print "Low:",a[i]
 			GPIO.output(a[i], GPIO.LOW)
+			self.writeledstate(i,0)
 				
 	def scan(self):
 		a = [17,18,21,22,23,24,25,4]

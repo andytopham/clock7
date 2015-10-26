@@ -17,10 +17,10 @@ def clockstart():
 	##The start of the real code ##
 	"""Main:clock7"""
 	"""Print info about the environment and initialise all hardware."""
-	print "main:- Clock7.1 - piLiter clock code."
-	logging.info("Setting time")
-	os.environ['TZ'] = 'Europe/London'
-	time.tzset
+	print "main:- Clock7.2 - piLiter clock code."
+#	logging.info("Setting time")
+#	os.environ['TZ'] = 'Europe/London'
+#	time.tzset
 	myGpio=gpio.gpio()
 	myGpio.sequenceleds()
 	myAlarmTime=alarmtime.AlarmTime()
