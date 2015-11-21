@@ -7,6 +7,8 @@ import time
 import datetime
 import logging
 
+ALARMTIMEFILE = '/home/pi/clock7/alarmtime.txt'
+
 class AlarmTime():
 	"""Class to manage the time for the alarm"""
 	
@@ -21,7 +23,7 @@ class AlarmTime():
 	def read(self):
 		logging.info("Reading alarm time")
 		try:
-			file=open('/home/pi/alarmtime.txt','r')
+			file=open(ALARMTIMEFILE,'r')
 			line1=file.readline()
 			line2=file.readline()
 			file.close()
@@ -35,12 +37,14 @@ class AlarmTime():
 			logging.warning("Failed to open alarmtime file, using defaults.")
 		logging.info("Weekday alarm time: %02d:%02d" % (self.alarmhour,self.alarmminute))
 		logging.info("Weekend alarm time: %02d:%02d" % (self.wealarmhour,self.wealarmminute))
-		print "Weekday alarm time: %02d:%02d" % (self.alarmhour,self.alarmminute)
-		print "Weekend alarm time: %02d:%02d" % (self.wealarmhour,self.wealarmminute)
+#		print "Weekday alarm time: %02d:%02d" % (self.alarmhour,self.alarmminute)
+#		print "Weekend alarm time: %02d:%02d" % (self.wealarmhour,self.wealarmminute)
 		return(0)
 		
 	def check(self):
+		''' Check whether alarm should go off and return that state.'''
 		logging.info("Checking alarm")
+		self.read()					# re-read the file in case it has been updated.
 		timenow=list(time.localtime())
 		hour=timenow[3]
 		minute=timenow[4] 

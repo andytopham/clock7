@@ -27,37 +27,64 @@
 <body>
 	<div id="page">
 		<div id="header">
-			<h1> Clock 7.2 </h1>
+			<h1> Clock 7.3 </h1>
 		</div>
 
 		<div id="body">
-		   <form method="post" action="index.php" style="font-size:xx-large" >
-			  Set alarm time: 
-				<input type="text" name="newalarmtime" style="font-size:xx-large">
-				<input type="submit" value="Submit" style="font-size:xx-large">
-		  </form>
 		  <?php
+			define('CLOCKDIR','/home/pi/clock7/');
+			define('ALARMTIME',CLOCKDIR.'alarmtime.txt');
+			define('LEDSTATE',CLOCKDIR.'ledstate.txt');
 			$secondsWait = 20;
-			header("Refresh:$secondsWait");
-			echo "Server time : " . date("D H:i", time()) . "<br>";
+			header("Refresh:$secondsWait");		# this refreshes the page.
+			echo "Time now: " . date("D H:i", time()) . "<br>";
+			$lines = file(ALARMTIME);
+			$altime = trim($lines[0]);	# trim removes the newline char.
+			$wetime = trim($lines[1]);
+#			echo "Weekday alarm:   ". $altime . "<br>";
+#			echo "Weekend alarm:   ". $wetime . "<br>";
+
+			$lines = file(LEDSTATE);
+			echo "LED state:   ". $lines[0] ."<br>";
+			
 			if ($_POST){
-				$fname=$_POST['newalarmtime'];
-				echo "New alarm time : ";
-				echo $fname;
-				echo "<br>";
-				$f=fopen("/home/pi/alarmtime.txt","w") or die("Could not open alarmtime.txt file for writing"); 
-				fwrite($f, $fname);
-				fclose($f); 
-				$f=fopen("/home/pi/selftest","w") or die("Could not open selftest file for writing"); 
-				fwrite($f, "1");
+				$newalarmtime = $altime;
+				$newwealarmtime = $wetime;
+				if ($_POST['newalarmtime']){
+					$altime = validate($_POST['newalarmtime']);
+					echo "New alarm time : " . $altime . "<br>";
+					header("Refresh:0");		# this refreshes the page.
+				}else{
+					$newalarmtime = $altime;
+				}
+				if ($_POST['newwealarmtime']){
+					$wetime = validate($_POST['newwealarmtime']);
+					echo "New we alarm time : " . $wetime . "<br>";
+					header("Refresh:0");		# this refreshes the page.
+				}else{
+					$newwealarmtime = $wetime;
+				}
+				$f=fopen(ALARMTIME,"w") or die("Could not open alarmtime.txt file for writing"); 
+				fwrite($f, $altime."\n");
+				fwrite($f, $wetime);
 				fclose($f); 
 			} 
-			$lines = file('/home/pi/alarmtime.txt');
-			echo "Weekday alarm time:   ". $lines[0] ."<br>";
-			echo "Weekend alarm time:   ". $lines[1] ."<br>";
-			$lines = file('/home/pi/ledstate.txt');
-			echo "LED state:   ". $lines[0] ."<br>";
+			function validate($incoming){	# extra checks that also avoid hack entries
+				$incoming = trim($incoming);
+				$incoming = stripslashes($incoming);
+				$incoming = htmlspecialchars($incoming);
+				return $incoming;
+			}
 		  ?>
+		   <form method="post" action="index.php" style="font-size:xx-large" >
+			  Weekday alarm: 
+				<input type="text" name="newalarmtime" value="<?php echo $altime;?>" style="font-size:xx-large">
+			  <br>Weekend alarm: 
+				<input type="text" name="newwealarmtime" value="<?php echo $wetime;?>" style="font-size:xx-large">
+				<br><center><input type="submit" value="Submit" style="font-size:xx-large">
+				</center>
+			</form>
+		  <br>
 			<center>
 				<img src="sunrise.jpg" alt="sunrise picture" > 
 			</center>

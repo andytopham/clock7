@@ -1,34 +1,13 @@
 #!/usr/bin/python
-''' 
-  Module to control the gpio switches.
-  Imported by iradio.
-  Will poll switches in a loop if called standalone.
-  Slice of Pi pinout:
-	Pin	Slice 	RPi		Use
-	11	GP0		GPIO17	SW1
-	12	GP1		GPIO18	SW2
-	13	GP2		GPIO21 	-
-	15	GP3		GPIO22	yellow led
-	16	GP4		GPIO23	-
-	18	GP5		GPIO24	red led
-	22	GP6		GPIO25
-	7	GP7		GPIO4
+# gpio.py
+# Control leds connected to gpio pins, typically via a slice of pi board.
 
-RPi.GPIO lib is required for this class. To install gpio lib:
-	sudo apt-get update
-	sudo apt-get dist-upgrade
-	sudo apt-get install python-rpi.gpio python3-rpi.gpio
-	Not the following...
-	wget https://raspberry-gpio-python.googlecode.com/files/RPi.GPIO-0.5.2a.tar.gz
-	tar zxf RPi.GPIO-0.5.2a.tar.gz
-	cd RPi.GPIO-0.5.2a
-	sudo python setup.py install
-'''
 import RPi.GPIO as GPIO
 import time
 import datetime
 import logging
-#import config
+LEDSTATEFILE = '/home/pi/clock7/ledstate.txt'
+SLICE_OF_PI = True
 
 class gpio:
 	'''A class containing ways to handle the RPi gpio. '''
@@ -38,27 +17,68 @@ class gpio:
 		self.logger.info("Starting gpio class")
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setwarnings(False)
-		#start with some constants
-		self.NEXTSW = 17
-		self.STOPSW = 18
-		self.VOLUP = 21
-		self.VOLDOWN = 22
-		self.YELLOWLED = 23					# temporary hack from 22
-		self.REDLED = 24
-#		self.PRESSED = config.PRESSED			# True for small box, False for metal box
-		#then initialise the variables
-		self.next = 0
-		self.stop = 0
-		self.vol = 0
-		
+		self.rpi_gpio_chk_function()	
+		rev = GPIO.RPI_INFO['P1_REVISION']
+		print 'RPi board revision:',str(rev)
+		if rev == 1:
+			if SLICE_OF_PI == True:
+				self.pins = [17,18,21,22,23,24,25,4]	# wiring pi numbering
+			else:
+				self.pins = [4,17,21,18,22,23,24,25]
+		else:
+			if SLICE_OF_PI == True:	# This array is the Slice of Pi pins: GP0-7
+				self.pins = [17,18,27,22,23,24,25,4]	# wiring pi numbering
+			else:
+				self.pins = [4,17,27,18,22,23,24,25]	# rev 2 pinout
+		for i in range(len(self.pins)):
+			GPIO.setup(self.pins[i], GPIO.OUT)
+
+	def rpi_gpio_chk_function(self):
+		# Now updated to use BCM mode
+		retstr = ''
+		pin = 10		# 19
+		GPIO.setmode(GPIO.BCM)
+		func = GPIO.gpio_function(pin)
+		if func == GPIO.SPI:
+			print 'SPI enabled'
+			retstr += 'SPI '
+		else:
+			print 'Warning: SPI not enabled!'
+		pin = 2		# 3
+		func = GPIO.gpio_function(pin)
+		if func == GPIO.I2C:
+			print 'I2C enabled'
+			retstr += 'I2C '
+		else:
+			print 'Warning: I2C not enabled!'
+		pin = 14 		# 8
+		func = GPIO.gpio_function(pin)
+		if func == GPIO.SERIAL:
+			print 'Serial enabled'
+			retstr += 'Serial '
+		else:
+			print 'Warning: Serial not enabled!'
+		pin = 18 		# 12
+		func = GPIO.gpio_function(pin)
+		if func == GPIO.HARD_PWM:
+			print 'PWM enabled'
+			retstr += 'PWM '
+		else:
+			print 'Warning: PWM not enabled!'
+		return(retstr)
+	
 	def writeledstate(self, lednumber, ledstate):
+		''' Save the state of an led in the state file. '''
 		led = []
-		file = open('/home/pi/ledstate.txt','r+')		# read and write
+		try:
+			file = open(LEDSTATEFILE,'r+')		# read and write
+		except:
+			file = open(LEDSTATEFILE,'w')		# if file does not exist
+			file.write('0 0 0 0 0 0 0 0')
+			file.close()
+			file = open(LEDSTATEFILE,'r+')		# read and write	
 		line = file.readline()
 		led = line.split()
-#		for i in range(8):
-#			print "led ",led[i]
-#		print "writing: ",str(lednumber),str(ledstate)
 		led[lednumber] = ledstate
 		file.seek(0)			# rewind file
 		for i in range(8):
@@ -66,39 +86,34 @@ class gpio:
 		file.close()
 		return(0)
 			
-	def sequenceleds(self, delay=.5, holdtime=.5):
-		'''Alternative test routine to be used with the clock3 slice of pi.'''
+	def sequenceleds(self, delay=0.5, holdtime=0.5):
+		'''The main led alarm sequence. Also, alternative test routine to be used with the clock3 slice of pi.'''
 		self.logger.debug("def gpio sequenceleds")
-		# This array is the Slice of Pi pins: GP0-7
-#		a = [17,18,21,22,23,24,25,4]
-#		a = [4,17,21,18,22,23,24,25]
-		a = [4,17,27,18,22,23,24,25]	# rev 2 pinout
 		# Set all pins as outputs
-		for i in range(len(a)):
-			GPIO.setup(a[i], GPIO.OUT)
-			GPIO.output(a[i], GPIO.LOW)
-		for i in range(len(a)):
+		for i in range(len(self.pins)):
+			GPIO.setup(self.pins[i], GPIO.OUT)
+			GPIO.output(self.pins[i], GPIO.LOW)
+		for i in range(len(self.pins)):
 			time.sleep(delay)
-			print "High:",a[i]
-			GPIO.output(a[i], GPIO.HIGH)
+			print "High:",self.pins[i]
+			GPIO.output(self.pins[i], GPIO.HIGH)
 			self.writeledstate(i,1)
 		time.sleep(holdtime)
-		for i in range(len(a)):
+		for i in range(len(self.pins)):
 			time.sleep(delay)
-			print "Low:",a[i]
-			GPIO.output(a[i], GPIO.LOW)
+			print "Low:",self.pins[i]
+			GPIO.output(self.pins[i], GPIO.LOW)
 			self.writeledstate(i,0)
 				
 	def scan(self):
-		a = [17,18,21,22,23,24,25,4]
-		for i in range(len(a)):
-			GPIO.setup(a[i],GPIO.IN)
-			print a[i]," ",
+		# Continuously read the gpio input pins and print results.
+		for i in range(len(self.pins)):
+			GPIO.setup(self.pins[i],GPIO.IN)
+			print self.pins[i]," ",
 		print
 		while True:
-			for i in range(len(a)):
-	#			print a[i],GPIO.input(a[i])
-				print GPIO.input(a[i]),"  ",
+			for i in range(len(self.pins)):
+				print GPIO.input(self.pins[i]),"  ",
 			print
 			time.sleep(1)
 		
@@ -110,8 +125,4 @@ if __name__ == "__main__":
 #	Default level is warning, level=logging.INFO log lots, level=logging.DEBUG log everything
 	logging.warning(datetime.datetime.now().strftime('%d %b %H:%M')+". Running gpio class as a standalone app")
 	myGpio = gpio()
-	myGpio.setup()
-#	myGpio.scan()
-#	myGpio.checkforstuckswitches()
-#	myGpio.test()
-	myGpio.sequenceleds()
+	myGpio.sequenceleds()		# use this as a self test
