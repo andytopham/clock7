@@ -20,7 +20,7 @@ LOGFILE = '/home/pi/clock7/log/clock7.log'
 		
 def clockstart(slice):	
 	"""Main:clock7"""
-	print "main:- Clock7.3 - piLiter clock code."
+	print "main:- Clock7.4 - alarm clock code."
 	if slice == True:
 		myGpio=gpio.gpio()
 	else:
@@ -28,12 +28,15 @@ def clockstart(slice):
 	myGpio.sequenceleds()
 	myAlarmTime=alarmtime.AlarmTime()
 	myAlarmTime.read()
-
+	steptime = 30
+	holdtime = 2000					# seconds
+	holdtime = myAlarmTime.return_holdtime()
+	print 'Entering main loop'
 	while True:
 		time.sleep(30)				# check every 30 seconds
 		if(myAlarmTime.check()):
 #			Parameters below are: delay, holdtime
-			myGpio.sequenceleds(30,2000)	# this is the alarm
+			myGpio.sequenceleds(steptime,holdtime)	# this is the alarm
 	  
 if __name__ == "__main__":
 	'''	clock6 main routine
