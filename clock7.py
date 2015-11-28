@@ -6,23 +6,26 @@
 """
 
 import time
-import os
+import os, sys
 import logging
 import datetime
 import alarmtime	# my module
-slice = True
-if slice == True:
+board = 'slice'
+if board == 'slice':
 	import gpio			# my module
-else:
+elif board == 'ledborg':
 	import ledborg as gpio	# alternative led solution
-
-LOGFILE = '/home/pi/clock7/log/clock7.log'
+else:
+	print "Error: board type not specified"
+	sys.exit()
+	
+LOGFILE = 'log/clock7.log'
 		
-def clockstart(slice):	
+def clockstart(board = 'slice'):	
 	"""Main:clock7"""
 	print "main:- Clock7.4 - alarm clock code."
-	if slice == True:
-		myGpio=gpio.gpio()
+	if board == 'slice':
+		myGpio=gpio.gpio(board)
 	else:
 		myGpio=gpio.Ledborg()
 	myGpio.sequenceleds()
@@ -49,5 +52,5 @@ if __name__ == "__main__":
 						level=logging.INFO)	#filemode means that we do not append anymore
 #	Default level is warning, level=logging.INFO log lots, level=logging.DEBUG log everything
 	logging.warning(datetime.datetime.now().strftime('%d %b %H:%M')+". Running clock7 class as a standalone app")
-	clockstart(slice)
+	clockstart(board)
 	

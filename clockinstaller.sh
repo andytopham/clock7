@@ -1,19 +1,19 @@
 #!/bin/sh
 echo "clock7 installer"
-echo
-echo "apt-get update"
+echo "Doing updates"
 apt-get update
-echo
-echo "apt-get -y upgrade"
 apt-get -y upgrade
-echo "installing rpi-gpio"
 apt-get -y install python-dev
 apt-get -y install python-rpi.gpio
-echo "setup dirs"
+echo "Setup dirs"
 mkdir log
 echo 'Enable alarmtime file for writing by web server'
 chmod 666 alarmtime.txt
-echo "installing web stuff"
+echo 'Allow to run at power up'
+cp startclock.sh /etc/init.d
+chmod 755 /etc/init.d/startclock.sh
+update-rc.d startclock.sh defaults
+echo "Installing web stuff"
 apt-get -y install lighttpd
 apt-get -y install php5-common
 apt-get -y install php5-cgi

@@ -6,12 +6,11 @@ import RPi.GPIO as GPIO
 import time
 import datetime
 import logging
-LEDSTATEFILE = '/home/pi/clock7/ledstate.txt'
-SLICE_OF_PI = True
+LEDSTATEFILE = 'ledstate.txt'
 
 class gpio:
 	'''A class containing ways to handle the RPi gpio. '''
-	def __init__(self):
+	def __init__(self, board = 'slice'):
 		'''Initialise GPIO ports. '''
 		self.logger = logging.getLogger(__name__)
 		self.logger.info("Starting gpio class")
@@ -21,12 +20,12 @@ class gpio:
 		rev = GPIO.RPI_INFO['P1_REVISION']
 		print 'RPi board revision:',str(rev)
 		if rev == 1:
-			if SLICE_OF_PI == True:
+			if board == 'slice':
 				self.pins = [17,18,21,22,23,24,25,4]	# wiring pi numbering
 			else:
 				self.pins = [4,17,21,18,22,23,24,25]
 		else:
-			if SLICE_OF_PI == True:	# This array is the Slice of Pi pins: GP0-7
+			if board == 'slice':	# This array is the Slice of Pi pins: GP0-7
 				self.pins = [17,18,27,22,23,24,25,4]	# wiring pi numbering
 			else:
 				self.pins = [4,17,27,18,22,23,24,25]	# rev 2 pinout
