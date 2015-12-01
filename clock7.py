@@ -15,6 +15,8 @@ if board == 'slice':
 	import gpio			# my module
 elif board == 'ledborg':
 	import ledborg as gpio	# alternative led solution
+elif board == 'uoled':
+	import uoled
 else:
 	print "Error: board type not specified"
 	sys.exit()

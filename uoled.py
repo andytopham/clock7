@@ -5,6 +5,9 @@
 # GPIO docs are here...
 # https://pypi.python.org/pypi/RPi.GPIO
 # http://raspi.tv/2015/rpi-gpio-new-feature-gpio-rpi_info-replaces-gpio-rpi_revision
+# ToDo
+# Add horizontal scrolling with this...
+# http://guy.carpenter.id.au/gaugette/2012/11/11/font-support-for-ssd1306/
 
 import gaugette.ssd1306
 #from gaugette.fonts import gaugette.font5x8
@@ -54,8 +57,8 @@ class uoled:
 	def writerow(self,rownumber,string, fontselect):
 		xpos = 0
 		ypos = (rownumber-1) * self.fontsize
-		if fontselect == False:
-			self.MySsd.draw_text2(xpos, ypos, string, 1)
+		if fontselect == False:								# so use the default font
+			self.MySsd.draw_text2(xpos, ypos, string, 1)	# note the use of 'text2'
 		else:
 			self.MySsd.draw_text3(xpos, ypos, string, self.font)
 		return(0)
@@ -65,6 +68,13 @@ class uoled:
 #		self.MySsd.draw_pixel(x+1,y,True)
 #		self.MySsd.draw_pixel(x,y+1,True)
 #		self.MySsd.draw_pixel(x+1,y+1,True)
+		return(0)
+		
+	def draw_sprite(self,sprite):
+		for o in sprite:
+			for pt in o:
+#				print o
+				self.MySsd.draw_pixel(pt[0], pt[1], True)
 		return(0)
 		
 	def delete_blob(self,x,y):
@@ -78,25 +88,28 @@ class uoled:
 		self.MySsd.display()
 		return(0)
 
-		
 	def show_time(self):
 		while True:
 			self.MySsd.clear_display()
 			#			self.writerow(1, self.time_now, False)		# to clear old text	
 			date_now = time.strftime("%b %d %Y", time.gmtime())
 			time_now = time.strftime("%H:%M:%S", time.gmtime())
-			self.writerow(1, time_now, True)	
-			self.writerow(2, date_now, False)	
-#			self.writerow(3, '012345678901234567890')	
-#			self.writerow(4, 'Row 4')	
+			self.writerow(1, time_now, True)	# chg to big font
+			self.writerow(2, date_now, False)	# std small font
 			self.display()
 			time.sleep(1)
 		return(0)
+
+	def game(self):
+		x = 0
+		y = 0
+		while True:
+			x += 1
+		return(0)
 		
 if __name__ == "__main__":
+	print 'uoled.py: showing real time clock.'
 	myDisplay = uoled()
 	myDisplay.show_time()
-#	myDisplay.writerow(1,'This is the uoled test.')
-#	myDisplay.writerow(2,'012345678901234567890')
 	myDisplay.display()
 	
