@@ -48,3 +48,9 @@ class Uoled_Emulator():
 		pygame.display.flip()
 		return(0)
 		
+	def draw_sprite(self,sprite):
+		for o in sprite:
+			for pt in o:
+#				print o
+				self.MySsd.draw_pixel(pt[0], pt[1], True)
+		return(0)

@@ -29,8 +29,9 @@ class gpio:
 				self.pins = [17,18,27,22,23,24,25,4]	# wiring pi numbering
 			else:
 				self.pins = [4,17,27,18,22,23,24,25]	# rev 2 pinout
-		for i in range(len(self.pins)):
-			GPIO.setup(self.pins[i], GPIO.OUT)
+#		for i in range(len(self.pins)):
+#			GPIO.setup(self.pins[i], GPIO.OUT)
+		GPIO.setup(self.pins, GPIO.OUT)		# can now set all pins as outputs in one statement by passing the array.
 
 	def rpi_gpio_chk_function(self):
 		# Now updated to use BCM mode
@@ -123,5 +124,6 @@ if __name__ == "__main__":
 						level=logging.WARNING)	#filemode means that we do not append anymore
 #	Default level is warning, level=logging.INFO log lots, level=logging.DEBUG log everything
 	logging.warning(datetime.datetime.now().strftime('%d %b %H:%M')+". Running gpio class as a standalone app")
+	print 'Cycling ouputs - turning on attached leds.'
 	myGpio = gpio()
 	myGpio.sequenceleds()		# use this as a self test

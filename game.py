@@ -8,7 +8,7 @@ import time
 
 class Bouncer:
 	def __init__(self):
-		RPi = True
+		RPi = False
 		if RPi == True:
 			import uoled
 			self.myUoled = uoled.uoled()	

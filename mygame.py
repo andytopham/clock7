@@ -1,4 +1,5 @@
 """
+My breakout version based on....
 Sample Python/Pygame Programs
 Simpson College Computer Science
 http://programarcadegames.com/
@@ -64,13 +65,10 @@ class Player(Block):
     def update(self):
         # Get the current mouse position. This returns the position
         # as a list of two numbers.
-        pos = pygame.mouse.get_pos()
- 
-        # Fetch the x and y out of the list,
-        # just like we'd fetch letters out of a string.
-        # Set the player object to the mouse location
-        self.rect.x = pos[0]
-        self.rect.y = pos[1]
+ #       pos = pygame.mouse.get_pos()
+
+        self.rect.x = xpos + xmov
+        self.rect.y = ypos + ymov
  
 # Initialize Pygame
 pygame.init()
@@ -131,15 +129,10 @@ while not done:
         score += 1
         print(score)
  
-        # Reset block to the top of the screen to fall again.
-        block.reset_pos()
- 
     # Draw all the spites
     all_sprites_list.draw(screen)
- 
     # Limit to 20 frames per second
     clock.tick(20)
- 
     # Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
  
