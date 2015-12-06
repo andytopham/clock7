@@ -19,6 +19,7 @@ class gpio:
 		self.rpi_gpio_chk_function()	
 		rev = GPIO.RPI_INFO['P1_REVISION']
 		print 'RPi board revision:',str(rev)
+		board = 'tft'
 		if rev == 1:
 			if board == 'slice':
 				self.pins = [17,18,21,22,23,24,25,4]	# wiring pi numbering
@@ -108,7 +109,7 @@ class gpio:
 	def scan(self):
 		# Continuously read the gpio input pins and print results.
 		for i in range(len(self.pins)):
-			GPIO.setup(self.pins[i],GPIO.IN)
+			GPIO.setup(self.pins[i],GPIO.IN, pull_up_down=GPIO.PUD_UP)
 			print self.pins[i]," ",
 		print
 		while True:
@@ -124,6 +125,8 @@ if __name__ == "__main__":
 						level=logging.WARNING)	#filemode means that we do not append anymore
 #	Default level is warning, level=logging.INFO log lots, level=logging.DEBUG log everything
 	logging.warning(datetime.datetime.now().strftime('%d %b %H:%M')+". Running gpio class as a standalone app")
-	print 'Cycling ouputs - turning on attached leds.'
+	print 'Cycling outputs - turning on attached leds.'
 	myGpio = gpio()
-	myGpio.sequenceleds()		# use this as a self test
+#	myGpio.sequenceleds()		# use this as a self test
+	myGpio.scan()
+	
