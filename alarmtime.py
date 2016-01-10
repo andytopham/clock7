@@ -7,7 +7,7 @@ import time
 import datetime
 import logging
 
-ALARMTIMEFILE = '/home/pi/clock7/alarmtime.txt'			# change this to relative dir?
+ALARMTIMEFILE = '/home/pi/master/clock7/alarmtime.txt'			# change this to relative dir?
 
 class AlarmTime():
 	"""Class to manage the time for the alarm"""

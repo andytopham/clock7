@@ -1,9 +1,9 @@
 #! /bin/sh
-# /etc/init.d/startclock
-# The script to start clock7 at power up.
+# /etc/init.d/startlighting
+# The script to start lighting at power up.
 
 # Some things that run always
-python /home/pi/master/clock7/clock7.py &
+python /home/pi/master/clock7/pio.py &
 
 # Carry out specific functions when asked to by the system
 case "$1" in

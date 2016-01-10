@@ -4,7 +4,7 @@
 */
 
 // ToDo: split this php into a separate file, then editor can behave correctly.
-define('CLOCKDIR','/home/pi/clock7/');
+define('CLOCKDIR','/home/pi/master/clock7/');
 define('ALARMTIME',CLOCKDIR.'alarmtime.txt');
 define('LEDSTATE',CLOCKDIR.'ledstate.txt');
 $secondsWait = 20;

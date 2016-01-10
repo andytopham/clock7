@@ -8,7 +8,7 @@ import datetime
 import smbus
 import time
 
-LOGFILE = 'log/pio.log'
+LOGFILE = '/home/pi/master/clock7/log/pio.log'
 
 class Pio():
 	"""Class to control the bank of 8 leds"""
@@ -70,6 +70,15 @@ class Pio():
 		time.sleep(waittime)
 		self.ledsoff()
 		
+	def lighting(self):
+		print 'Lighting'
+		vals = [0, 255, 255, 255, 255, 127, 127, 255]
+		while True:
+			for i in range(8):
+#				print 'Lighting value:',i, vals[i]
+				self.bittest(vals[i])
+				time.sleep(5)
+	
 	def counter(self):
 		print 'Counter'
 		for i in range(256):
@@ -119,6 +128,8 @@ if __name__ == "__main__":
 						level=logging.INFO)	#filemode means that we do not append anymore
 #	Default level is warning, level=logging.INFO log lots, level=logging.DEBUG log everything
 	logging.warning(datetime.datetime.now().strftime('%d %b %H:%M')+". Running pio class as a standalone app")
-	myLeds=Leds()
+	myLeds=Pio()
 #	myLeds.selftest(.5,1)
-	myLeds.counter()
+#	myLeds.counter()
+	myLeds.lighting()
+	

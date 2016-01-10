@@ -21,7 +21,7 @@ else:
 	print "Error: board type not specified"
 	sys.exit()
 	
-LOGFILE = 'log/clock7.log'
+LOGFILE = '/home/pi/master/clock7/log/clock7.log'
 		
 def clockstart(board = 'slice'):	
 	"""Main:clock7"""
