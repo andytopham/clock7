@@ -5,8 +5,10 @@
 import RPi.GPIO as GPIO
 import time
 import datetime
+import socket, fcntl, struct
 import logging
-LEDSTATEFILE = 'ledstate.txt'
+LEDSTATEFILE = '/home/pi/master/clock7/ledstate.txt'
+LOGFILE = '/home/pi/master/clock7/log/gpio.log'
 
 class gpio:
 	'''A class containing ways to handle the RPi gpio. '''
@@ -19,7 +21,9 @@ class gpio:
 		self.rpi_gpio_chk_function()	
 		rev = GPIO.RPI_INFO['P1_REVISION']
 		print 'RPi board revision:',str(rev)
+		self.logger.info('RPi board revision:'+str(rev))
 		board = 'tft'
+		self.logger.info('HAT type: '+board)
 		if rev == 1:
 			if board == 'slice':
 				self.pins = [17,18,21,22,23,24,25,4]	# wiring pi numbering
@@ -33,7 +37,17 @@ class gpio:
 #		for i in range(len(self.pins)):
 #			GPIO.setup(self.pins[i], GPIO.OUT)
 		GPIO.setup(self.pins, GPIO.OUT)		# can now set all pins as outputs in one statement by passing the array.
+		self.logger.info('gpio initialised')
 
+	def get_ip_address(self, ifname = 'wlan0'):
+		self.logger.info('get_ip_address')
+		try:
+			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+			return socket.inet_ntoa(fcntl.ioctl(s.fileno(),0x8915,  # SIOCGIFADDR
+				struct.pack('256s', ifname[:15]))[20:24])
+		except:
+			return('0')
+			
 	def rpi_gpio_chk_function(self):
 		# Now updated to use BCM mode
 		retstr = ''
@@ -70,6 +84,7 @@ class gpio:
 	
 	def writeledstate(self, lednumber, ledstate):
 		''' Save the state of an led in the state file. '''
+		self.logger.info('writeledstate')
 		led = []
 		try:
 			file = open(LEDSTATEFILE,'r+')		# read and write
@@ -105,7 +120,43 @@ class gpio:
 			print "Low:",self.pins[i]
 			GPIO.output(self.pins[i], GPIO.LOW)
 			self.writeledstate(i,0)
+			
+	def writeleds(self, write_byte, holdtime = 5):
+		'''Write the last_byte value to the leds.'''
+		self.logger.debug("def gpio writeleds")
+		# Set all pins as outputs
+		for i in range(len(self.pins)):
+			GPIO.setup(self.pins[i], GPIO.OUT)
+			GPIO.output(self.pins[i], GPIO.LOW)
+		if write_byte == '0':
+			self.flash_error()
+		else:
+			mask = 1
+			test_byte = int(write_byte) & 255
+			for i in range(len(self.pins)):
+				if (test_byte & mask):
+					print "Address High:",self.pins[i], 'mask ' , mask
+					GPIO.output(self.pins[i], GPIO.HIGH)
+					self.writeledstate(i,1)
+				mask = mask * 2
+			time.sleep(holdtime)
+			self.off()
 				
+	def off(self):
+		self.logger.info('gpio off')
+		print 'All off'
+		for i in range(len(self.pins)):
+			GPIO.output(self.pins[i], GPIO.LOW)
+			self.writeledstate(i,0)
+	
+	def flash_error(self):
+		self.logger.info('gpio flash_error')
+		for i in range(10):
+			GPIO.output(self.pins[7], GPIO.HIGH)
+			time.sleep(.5)
+			GPIO.output(self.pins[7], GPIO.LOW)
+			time.sleep(.5)
+			
 	def scan(self):
 		# Continuously read the gpio input pins and print results.
 		for i in range(len(self.pins)):
@@ -120,7 +171,7 @@ class gpio:
 		
 if __name__ == "__main__":
 	'''Called if this file is called standalone. Then just runs a selftest. '''
-	logging.basicConfig(filename='log/gpio.log',
+	logging.basicConfig(filename = LOGFILE,
 						filemode='w',
 						level=logging.WARNING)	#filemode means that we do not append anymore
 #	Default level is warning, level=logging.INFO log lots, level=logging.DEBUG log everything

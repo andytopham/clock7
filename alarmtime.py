@@ -8,12 +8,14 @@ import datetime
 import logging
 
 ALARMTIMEFILE = '/home/pi/master/clock7/alarmtime.txt'			# change this to relative dir?
+LOGFILE = '/home/pi/master/clock7/log/alarmtime.log'
 
 class AlarmTime():
 	"""Class to manage the time for the alarm"""
 	
 	def __init__(self):
-		logging.info("Initialising alarm time")
+		self.logger = logging.getLogger(__name__)
+		self.logger.info("Initialising alarm time")
 		a=0 # just to fix the formatting
 		self.alarmhour=6
 		self.alarmminute=20
@@ -22,7 +24,7 @@ class AlarmTime():
 		self.holdtime = 2000			# seconds
 		
 	def read(self):
-		logging.info("Reading alarm time")
+		self.logger.info("Reading alarm time")
 		try:
 			file=open(ALARMTIMEFILE,'r')
 			line1=file.readline()
@@ -36,12 +38,10 @@ class AlarmTime():
 			self.wealarmhour=int(a)
 			self.wealarmminute = int(b)
 		except:
-			logging.warning("Failed to open alarmtime file, using defaults.")
-		logging.info("Weekday alarm time: %02d:%02d" % (self.alarmhour,self.alarmminute))
-		logging.info("Weekend alarm time: %02d:%02d" % (self.wealarmhour,self.wealarmminute))
-		logging.info("Hold time: %02d" % (self.holdtime))
-#		print "Weekday alarm time: %02d:%02d" % (self.alarmhour,self.alarmminute)
-#		print "Weekend alarm time: %02d:%02d" % (self.wealarmhour,self.wealarmminute)
+			self.logger.warning("Failed to open alarmtime file, using defaults.")
+		self.logger.info("Weekday alarm time: %02d:%02d" % (self.alarmhour,self.alarmminute))
+		self.logger.info("Weekend alarm time: %02d:%02d" % (self.wealarmhour,self.wealarmminute))
+		self.logger.info("Hold time: %02d" % (self.holdtime))
 		return(0)
 
 	def return_holdtime(self):
@@ -49,7 +49,7 @@ class AlarmTime():
 		
 	def check(self):
 		''' Check whether alarm should go off and return that state.'''
-		logging.info("Checking alarm")
+		self.logger.info("Checking alarm")
 		self.read()					# re-read the file in case it has been updated.
 		timenow=list(time.localtime())
 		hour=timenow[3]
@@ -57,14 +57,14 @@ class AlarmTime():
 		day=timenow[6]
 		if day < 5:				# weekday timings
 			if ((hour == self.alarmhour) and (minute == self.alarmminute)):
-				logging.warning("Alarm going off")
+				self.logger.warning("Alarm going off")
 				print "Alarm going off"
 				return(True)
 			else:
 				return(False)
 		else:					# weekend timings
 			if ((hour == self.wealarmhour) and (minute == self.wealarmminute)):
-				logging.warning("Alarm going off")
+				self.logger.warning("Alarm going off")
 				print "Alarm going off"
 				return(True)
 			else:
@@ -77,7 +77,7 @@ if __name__ == "__main__":
 	'''
 #	logging.basicConfig(format='%(levelname)s:%(message)s',
 	logging.basicConfig(
-						filename='/home/pi/log/alarmtime.log',
+						filename=LOGFILE,
 						filemode='w',
 						level=logging.INFO)	#filemode means that we do not append anymore
 #	Default level is warning, level=logging.INFO log lots, level=logging.DEBUG log everything

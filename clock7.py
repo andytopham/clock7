@@ -30,6 +30,15 @@ def clockstart(board = 'slice'):
 		myGpio=gpio.gpio(board)
 	else:
 		myGpio=gpio.Ledborg()
+	addr = myGpio.get_ip_address()
+	if addr is not '0':
+		last_byte = addr.split('.')[3]
+		print 'IP: ',addr,last_byte
+		logging.info('IP address: '+addr)
+		myGpio.writeleds(last_byte)
+	else:
+		logging.info('Zero IP address')
+		myGpio.flash_error()
 	myGpio.sequenceleds()
 	myAlarmTime=alarmtime.AlarmTime()
 	myAlarmTime.read()

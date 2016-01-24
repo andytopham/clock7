@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "clock7 installer"
+echo "clock7 installer - now includes airprint stuff."
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 
    exit 1
@@ -9,6 +9,9 @@ apt-get update
 apt-get -y upgrade
 apt-get -y install python-dev
 apt-get -y install python-rpi.gpio
+apt-get -y install cups
+# set pi user for cups
+usermod -a -G lpadmin pi
 echo "Setup dirs"
 mkdir log
 echo 'Enable alarmtime file for writing by web server'
@@ -33,4 +36,5 @@ echo "Then..."
 echo "Edit /etc/lighttpd/lighttpd.conf and change server.document-root page to this directory."
 echo "Then restart webserver by: sudo service lighttpd force-reload"
 echo "Error log is in /var/log/lighttpd, but will need to chmod 777 first."
+echo "Need to edit cupsd.conf."
 
