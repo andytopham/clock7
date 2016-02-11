@@ -3,6 +3,8 @@
 	To control leds mounted on Raspberry PI/O board.
 	
 """
+# Install: apt-get install python-smbus
+
 import logging
 import datetime
 import smbus

@@ -4,7 +4,7 @@
 
 # Some things that run always
 # the next line is needed to allow the ip address to be settled
-sleep 10
+sleep 20
 python /home/pi/master/clock7/clock7.py &
 
 # Carry out specific functions when asked to by the system
