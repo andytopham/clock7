@@ -10,27 +10,34 @@ import os, sys
 import logging
 import datetime
 import alarmtime	# my module
-board = 'slice'
+#board = 'slice'
+board = 'blinkt'
 if board == 'slice':
 	import gpio			# my module
 elif board == 'ledborg':
 	import ledborg as gpio	# alternative led solution
 elif board == 'uoled':
 	import uoled
+elif board == 'blinkt':
+	import blinktcontrol
 else:
 	print "Error: board type not specified"
 	sys.exit()
 	
 LOGFILE = '/home/pi/master/clock7/log/clock7.log'
 		
-def clockstart(board = 'slice'):	
+def clockstart(board = 'blinkt'):	
 	"""Main:clock7"""
 	print "main:- Clock7.4 - alarm clock code."
+	print 'Board selected:', board
 	if board == 'slice':
 		myGpio=gpio.gpio(board)
-	else:
+	elif board == 'ledborg':
 		myGpio=gpio.Ledborg()
-	addr = myGpio.get_ip_address()
+	elif board == 'blinkt':
+		myGpio = blinktcontrol.Blinktcontrol()
+	addr = '0'
+#	addr = myGpio.get_ip_address()
 	if addr is not '0':
 		last_byte = addr.split('.')[3]
 		print 'IP: ',addr,last_byte
@@ -47,10 +54,10 @@ def clockstart(board = 'slice'):
 	holdtime = myAlarmTime.return_holdtime()
 	print 'Entering main loop'
 	while True:
-		time.sleep(30)				# check every 30 seconds
 		if(myAlarmTime.check()):
 #			Parameters below are: delay, holdtime
 			myGpio.sequenceleds(steptime,holdtime)	# this is the alarm
+		time.sleep(30)				# check every 30 seconds
 	  
 if __name__ == "__main__":
 	'''	clock6 main routine
