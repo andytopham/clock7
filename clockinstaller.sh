@@ -7,19 +7,28 @@ fi
 echo "Doing updates"
 apt-get update
 apt-get -y upgrade
+apt-get -y python-pip
 apt-get -y install python-dev
 apt-get -y install python-rpi.gpio
-apt-get -y install cups
+pip install blinkt
+
+# apt-get -y install cups
 # set pi user for cups
-usermod -a -G lpadmin pi
+# usermod -a -G lpadmin pi
 echo "Setup dirs"
 mkdir log
 echo 'Enable alarmtime file for writing by web server'
 chmod 666 alarmtime.txt
+
 echo 'Allow to run at power up'
-cp startclock.sh /etc/init.d
-chmod 755 /etc/init.d/startclock.sh
-update-rc.d startclock.sh defaults
+# cp startclock.sh /etc/init.d
+# chmod 755 /etc/init.d/startclock.sh
+# update-rc.d startclock.sh defaults
+cp startclock.service /lib/systemd/system
+chmod 644 /lib/systemd/system/startclock.service
+systemctl daemon-reload
+systemctl enable startclock.service
+
 echo "Installing web stuff"
 apt-get -y install lighttpd
 apt-get -y install php5-common

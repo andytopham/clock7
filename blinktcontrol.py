@@ -3,32 +3,37 @@
 # A simple controller for the Pimoroni blinkt hardware.
 
 import time
-#import datetime
 import logging
 import blinkt
-#import wiringpi2 as wiringpi
-
-#wiringpi.wiringPiSetup()
-
-LOGFILE = 'log/blinkt.log'
+LOGFILE = '/home/pi/master/clock7/log/blinkt.log'
 ON = 255
 OFF = 0
 NUM_PIXELS = 8
 
 class Blinktcontrol():
 	def __init__(self):
+		self.logger = logging.getLogger(__name__)
+		self.logger.info("Initialising blinktcontrol")
 		blinkt.set_clear_on_exit()
   
 	def setleds(self, state):
-		blinkt.set_all(state,state,state)	# params are r,g,b
+#		blinkt.set_all(state,state,state)	# params are r,g,b
+		blinkt.set_pixel(0,state,state,state)	# params are r,g,b
+		blinkt.set_pixel(1,state,state,state)	# params are r,g,b
 		blinkt.show()
 		return(0)
 		
 	def flash_error(self):
-		a = 1
+		self.setleds(1)
+		time.sleep(1)
+		self.setleds(0)
+		return(0)
 		
-	def sequenceleds(self, delay=0.5, holdtime=0.5):
-		steps = 8		# for compatibility with other boards
+	def sequenceleds(self, delay=0.05, holdtime=0.5):
+		self.logger.info("blinkt.sequenceleds")
+		if delay > 2:
+			delay = 1		# because we now have a lot of steps
+		steps = 255
 		ontimesteps = 0.001
 		ontime = 0.001
 		offtime = 0.01
