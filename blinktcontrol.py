@@ -19,7 +19,18 @@ class Blinktcontrol():
 	def setleds(self, state):
 #		blinkt.set_all(state,state,state)	# params are r,g,b
 		blinkt.set_pixel(0,state,state,state)	# params are r,g,b
-		blinkt.set_pixel(1,state,state,state)	# params are r,g,b
+		if state > 10:
+			blinkt.set_pixel(1,state,state,state)	# params are r,g,b
+		else:
+			blinkt.set_pixel(1,0,0,0)		
+		if state > 20:
+			blinkt.set_pixel(2,state,state,state)	# params are r,g,b
+		else:
+			blinkt.set_pixel(2,0,0,0)		
+		if state > 30:
+			blinkt.set_pixel(3,state,state,state)	# params are r,g,b
+		else:
+			blinkt.set_pixel(3,0,0,0)		
 		blinkt.show()
 		return(0)
 		
@@ -31,9 +42,9 @@ class Blinktcontrol():
 		
 	def sequenceleds(self, delay=0.05, holdtime=0.5):
 		self.logger.info("blinkt.sequenceleds")
-		if delay > 2:
-			delay = 1		# because we now have a lot of steps
-		steps = 255
+		if delay > 4:
+			delay = 4		# because we now have a lot of steps
+		steps = 63
 		ontimesteps = 0.001
 		ontime = 0.001
 		offtime = 0.01
