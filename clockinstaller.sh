@@ -7,7 +7,7 @@ fi
 echo "Doing updates"
 apt-get update
 apt-get -y upgrade
-apt-get -y python-pip
+apt-get -y install python-pip
 apt-get -y install python-dev
 apt-get -y install python-rpi.gpio
 pip install blinkt
@@ -31,18 +31,20 @@ systemctl enable startclock.service
 
 echo "Installing web stuff"
 apt-get -y install lighttpd
-apt-get -y install php5-common
-apt-get -y install php5-cgi
-apt-get -y install php5
+apt-get -y install php-common
+apt-get -y install php-cgi
+apt-get -y install php
 lighty-enable-mod fastcgi-php
 lighty-enable-mod cgi
 lighty-enable-mod userdir
 service lighttpd force-reload
 echo "Now set correct webpage by..."
-echo "First check that lighty is running by logging onto this server."
+echo "First check that lighty is running by logging onto this server and looking for process lighttpd."
+echo "Latest install does not provide a default web page so will get forbidden until next step complete."
 echo "!! Read the output of this carefully !! It tells you what to do next."
 echo "Then..."
 echo "Edit /etc/lighttpd/lighttpd.conf and change server.document-root page to this directory."
+echo "Probably... /home/pi/master/clock7"
 echo "Then restart webserver by: sudo service lighttpd force-reload"
 echo "Error log is in /var/log/lighttpd, but will need to chmod 777 first."
 echo "Need to edit cupsd.conf."
